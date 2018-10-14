@@ -1,0 +1,944 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "version": "v2",
+    "title": "AmplifyrV2 API",
+    "description": "This is  APIs for AmplifyrV2"
+  },
+  "tags": [
+    {
+      "name": "authentication",
+      "description": "Authentication API"
+    },
+    {
+      "name": "user",
+      "description": "Users API"
+    },
+    {
+      "name": "file",
+      "description": "File API"
+    },
+    {
+      "name": "dataset",
+      "description": "Dataset API"
+    }
+  ],
+  "paths": {
+    "/auth/google-oauth/{clientURI}": {
+      "get": {
+        "tags": [
+          "authentication"
+        ],
+        "summary": "Returns an authentication token.",
+        "description": "Returns an authentication token",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "clientURI",
+            "in": "path",
+            "description": "Callback URI to get authentication token",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "ok"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          }
+        }
+      }
+    },
+    "/_oauth-callback/{code}/{state}": {
+      "get": {
+        "tags": [
+          "authentication"
+        ],
+        "summary": "Application callback from auth server",
+        "description": "Application callback from auth server to process the authorization code",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "code",
+            "in": "path",
+            "description": "Code to get access token",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "state",
+            "in": "path",
+            "description": "application call state",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Google oauth json response"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          }
+        }
+      }
+    },
+    "/authenticate-user/{authToken}/{URI}": {
+      "get": {
+        "tags": [
+          "authentication"
+        ],
+        "summary": "Application callback to process auth token",
+        "description": "Application callback to process auth token and check user provisioning",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "authToken",
+            "in": "path",
+            "description": "Authentication token",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "URI",
+            "in": "path",
+            "description": "Registered Callback URI",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Google oauth json response"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          }
+        }
+      }
+    },
+    "/auth/logout": {
+      "get": {
+        "tags": [
+          "authentication"
+        ],
+        "summary": "Logs out current user",
+        "description": "Logs out current user based on the Authentication token",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "type": "string",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        }
+      }
+    },
+    "/users": {
+      "get": {
+        "tags": [
+          "user"
+        ],
+        "summary": "Returns a list of users.",
+        "description": "Returns a List of Users",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "type": "string",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "user response",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/User"
+              }
+            }
+          },
+          "default": {
+            "description": "unexpected error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
+    "/users/{user_id}": {
+      "get": {
+        "tags": [
+          "user"
+        ],
+        "summary": "Returns selected user information",
+        "description": "Returns selected user information",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "user_id",
+            "in": "path",
+            "description": "ID of user to fetch",
+            "required": true,
+            "type": "integer",
+            "format": "int64"
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "type": "string",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "user response",
+            "schema": {
+              "$ref": "#/definitions/User"
+            }
+          },
+          "404": {
+            "description": "user not found",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
+    "/{user_id}/datasets/upload/presignedurl": {
+      "post": {
+        "tags": [
+          "dataset"
+        ],
+        "summary": "Returns a presigned url",
+        "description": "Returns a presigned url for uploading a file to storage",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "user_id",
+            "in": "path",
+            "description": "User ID of user for which file has to be uploaded",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "data",
+            "in": "body",
+            "description": "Add new user",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/PresignedURL"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "data": {
+                  "type": "object",
+                  "properties": {
+                    "presignedurl": {
+                      "type": "string",
+                      "example": "https://amplifyr-users.s3.amazonaws.com/1c/old_file.csv"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "unauthorized",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
+          "403": {
+            "description": "forbidden from getting the url",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
+          "500": {
+            "description": "internal server error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
+    "/{user_id}/datasets/inferschema": {
+      "post": {
+        "tags": [
+          "dataset"
+        ],
+        "summary": "Returns the schema for a dataset sample",
+        "description": "Returns the schema for a particular dataset sample",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "user_id",
+            "in": "path",
+            "description": "User ID of a valid user",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "data",
+            "in": "body",
+            "description": "dataset sample",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "schema_list": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/definitions/ColumnMetadata"
+                  }
+                },
+                "preview_data": {
+                  "type": "array",
+                  "items": {
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "example": "1"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "data": {
+                  "type": "object",
+                  "properties": {
+                    "schema_list": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/definitions/ColumnMetadata"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "unauthorized",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
+          "403": {
+            "description": "forbidden from getting the url",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
+          "500": {
+            "description": "internal server error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
+    "/{user_id}/datasets/metadata": {
+      "get": {
+        "tags": [
+          "dataset"
+        ],
+        "parameters": [
+          {
+            "name": "user_id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "summary": "Returns details of datasets for a particular user",
+        "description": "Returns details of datasets for a particular user",
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "dataset response",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/Dataset"
+              }
+            }
+          },
+          "default": {
+            "description": "unexpected error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "dataset"
+        ],
+        "parameters": [
+          {
+            "name": "user_id",
+            "description": "User ID of a user",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "data",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/DatasetCreateRequest"
+            }
+          }
+        ],
+        "summary": "Saves details of a dataset",
+        "description": "Saves details for a particular dataset for a particular user",
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "dataset response",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/Dataset"
+              }
+            }
+          },
+          "default": {
+            "description": "unexpected error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
+    "/{user_id}/datasets/{dataset_id}/metadata": {
+      "get": {
+        "tags": [
+          "dataset"
+        ],
+        "parameters": [
+          {
+            "name": "user_id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "dataset_id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "summary": "Returns details of a dataset",
+        "description": "Returns details of a particular dataset for a particular user",
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "dataset response",
+            "schema": {
+              "$ref": "#/definitions/Dataset"
+            }
+          },
+          "default": {
+            "description": "unexpected error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "dataset"
+        ],
+        "parameters": [
+          {
+            "name": "user_id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "dataset_id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "data",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/DatasetUpdateRequest"
+            }
+          }
+        ],
+        "summary": "Updates details of a dataset",
+        "description": "Updates details of a particular dataset for a particular user",
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "dataset response"
+          },
+          "default": {
+            "description": "unexpected error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "dataset"
+        ],
+        "summary": "Deletes details of a dataset",
+        "description": "Deletes a particular dataset",
+        "parameters": [
+          {
+            "name": "user_id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "dataset_id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "default": {
+            "description": "unexpected error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
+    "/{user_id}/datasets/{dataset_id}/column-metadata": {
+      "post": {
+        "tags": [
+          "dataset"
+        ],
+        "parameters": [
+          {
+            "name": "user_id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "dataset_id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "data",
+            "in": "body",
+            "description": "dataset sample",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "schema_list": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/definitions/ColumnMetadata"
+                  }
+                }
+              }
+            }
+          }
+        ],
+        "summary": "Saves column details of a dataset",
+        "description": "Saves column details of a particular dataset for a particular user",
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "dataset response",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "data": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string",
+                      "example": "Metadata for columns saved successfully"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "unexpected error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "dataset"
+        ],
+        "parameters": [
+          {
+            "name": "user_id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "dataset_id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "data",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/ColumnMetadataWithId"
+            }
+          }
+        ],
+        "summary": "Updates column details of a dataset",
+        "description": "Updates column details of a particular dataset for a particular user",
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "dataset response",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "data": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string",
+                      "example": "Metadata for columns updated successfully"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "unexpected error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    }
+  },
+  "definitions": {
+    "DatasetCreateRequest": {
+      "type": "object",
+      "properties": {
+        "file_path": {
+          "type": "string",
+          "example": "dataset/demo_data.csv"
+        },
+        "dataset_name": {
+          "type": "string",
+          "example": "example_name"
+        },
+        "file_size": {
+          "type": "integer",
+          "example": 343434
+        }
+      }
+    },
+    "DatasetUpdateRequest": {
+      "type": "object",
+      "properties": {
+        "file_path": {
+          "type": "string",
+          "example": "dataset/demo_data.csv"
+        },
+        "dataset_name": {
+          "type": "string",
+          "example": "example_name"
+        }
+      }
+    },
+    "Dataset": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "example": 1
+        },
+        "file_path": {
+          "type": "string",
+          "example": "dataset/demo_data.csv"
+        },
+        "dataset_name": {
+          "type": "string",
+          "example": "example_name"
+        },
+        "user_id": {
+          "type": "string",
+          "example": 234234
+        },
+        "number_of_rows": {
+          "type": "integer",
+          "example": 34523452
+        },
+        "number_of_columns": {
+          "type": "integer",
+          "example": 34
+        },
+        "file_size": {
+          "type": "integer",
+          "example": 343434
+        },
+        "created_date": {
+          "type": "integer",
+          "example": 84958254234
+        },
+        "updated_date": {
+          "type": "integer",
+          "example": 84958254234
+        }
+      }
+    },
+    "ColumnMetadata": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string",
+          "example": "example_name"
+        },
+        "position": {
+          "type": "string",
+          "example": 234234
+        },
+        "datatype": {
+          "type": "string",
+          "example": "String"
+        },
+        "format": {
+          "type": "string",
+          "example": "String"
+        },
+        "decimal": {
+          "type": "integer",
+          "example": 3
+        },
+        "separator": {
+          "type": "boolean",
+          "example": false
+        },
+        "visibility": {
+          "type": "boolean",
+          "example": true
+        },
+        "calculated": {
+          "type": "boolean",
+          "example": false
+        },
+        "formula": {
+          "type": "string",
+          "example": ""
+        },
+        "metrics": {
+          "type": "string",
+          "example": ""
+        }
+      }
+    },
+    "ColumnMetadataWithId": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "example": "ab232e1231sw"
+        },
+        "name": {
+          "type": "string",
+          "example": "example_name"
+        },
+        "position": {
+          "type": "string",
+          "example": 234234
+        },
+        "datatype": {
+          "type": "string",
+          "example": "String"
+        },
+        "format": {
+          "type": "string",
+          "example": "String"
+        },
+        "decimal": {
+          "type": "integer",
+          "example": 3
+        },
+        "separator": {
+          "type": "boolean",
+          "example": false
+        },
+        "visibility": {
+          "type": "boolean",
+          "example": true
+        },
+        "calculated": {
+          "type": "boolean",
+          "example": false
+        },
+        "formula": {
+          "type": "string",
+          "example": ""
+        },
+        "metrics": {
+          "type": "string",
+          "example": ""
+        }
+      }
+    },
+    "User": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "example": 1
+        },
+        "first_name": {
+          "type": "string",
+          "example": "firstname"
+        },
+        "last_name": {
+          "type": "string",
+          "example": "lastname"
+        },
+        "username": {
+          "type": "string",
+          "example": "username"
+        },
+        "email": {
+          "type": "string",
+          "example": "sample"
+        },
+        "updated_at": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "created_at": {
+          "type": "integer",
+          "format": "int64"
+        }
+      }
+    },
+    "PresignedURL": {
+      "type": "object",
+      "properties": {
+        "file_path": {
+          "type": "string"
+        }
+      }
+    },
+    "Error": {
+      "type": "object",
+      "required": [
+        "error"
+      ],
+      "properties": {
+        "error": {
+          "type": "string"
+        }
+      }
+    }
+  },
+  "schemes": [
+    "https"
+  ],
+  "host": "virtserver.swaggerhub.com",
+  "basePath": "/IdeaLabsLatentView/AmplifyrV2/v2"
+}

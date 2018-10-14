@@ -1,0 +1,154 @@
+# Routes
+# This file defines all application routes (Higher priority routes first)
+# ~~~~
+
+# Home page
+GET        /                               controllers.AuthenticationController.index
+
+# Map static resources from the /public folder to the /assets URL path
+GET        /assets/*file                   controllers.Assets.at(path="/public", file)
+
+# OAuth2
+GET        /_oauth-callback                controllers.AuthenticationController.callback(code: Option[String], state: Option[String])
+GET        /authenticate-user              controllers.AuthenticationController.authenticateUser(authToken: String, url:String)
+GET        /auth/google-oauth/:clientURI   controllers.AuthenticationController.loginWithGoogle(clientURI: String)
+GET        /auth/logout                    controllers.AuthenticationController.logout
+
+GET        /users                          controllers.UserController.getUser
+GET        /users/:user_id                 controllers.UserController.findById(user_id:String)
+POST       /users                          controllers.UserController.createUser
+
+
+
+# AccessControlList
+POST       /acl/:user_id/permission        controllers.AuthenticationController.setACLPermission(user_id:String)
+
+# Dataset
+POST       /:user_id/datasets/inferschema                           controllers.FileHandlerController.generateMetadataSecured(user_id: String)
+
+POST       /:user_id/datasets/upload/presignedurl                   controllers.FileHandlerController.getPresignedUrlForUploadSecured(user_id: String)
+GET        /:user_id/datasets/:dataset_id/download/presignedurl     controllers.FileHandlerController.getPresignedUrlForDownloadSecured(user_id: String, dataset_id: String)
+
+GET        /:user_id/datasets/:dataset_id/dataset_download          controllers.FileHandlerController.downloadDatasetSecured(user_id: String, dataset_id: String)
+
+POST      /:user_id/datasets/check-dataset-name                     controllers.FileHandlerController.CheckDatasetName(user_id: String)
+
+
+
+GET        /:user_id/datasets/metadata                              controllers.FileHandlerController.getFileMetadataSecured(user_id: String, page: Int ?= 1, limit: Int ?= 15, q: String ?="", sort_key:String ?= "created_date", sort_type:String ?= "desc")
+GET        /:user_id/datasets/:dataset_id/metadata                  controllers.FileHandlerController.getFileMetadataByIdSecured(user_id: String, dataset_id:String)
+POST       /:user_id/datasets/metadata                              controllers.FileHandlerController.saveFileMetadataSecured(user_id: String)
+PUT        /:user_id/datasets/:dataset_id/metadata                  controllers.FileHandlerController.updateFileMetadataSecured(user_id: String, dataset_id: String)
+DELETE     /:user_id/datasets/:dataset_id/metadata                  controllers.FileHandlerController.deleteFileMetadataSecured(user_id: String, dataset_id: String)
+GET        /:user_id/datasets/:dataset_id/column-metadata           controllers.FileHandlerController.getColumnMetadataSecured(user_id: String, dataset_id: String)
+POST       /:user_id/datasets/:dataset_id/column-metadata           controllers.FileHandlerController.saveColumnMetadataSecured(user_id: String, dataset_id: String)
+PUT        /:user_id/datasets/:dataset_id/column-metadata           controllers.FileHandlerController.updateColumnMetadataSecured(user_id: String, dataset_id: String)
+GET        /:user_id/datasets/:dataset_id/status                    controllers.SummaryController.getDatasetSatus(user_id: String, dataset_id:String)
+GET        /:user_id/datasets/:dataset_id/view                      controllers.FileHandlerController.viewDatasetSecured(user_id: String, dataset_id: String, page: Int ?= 1, limit: Int ?= 100)
+PUT        /:user_id/datasets/:dataset_id/view                      controllers.FileHandlerController.updateDatasetSecured(user_id: String, dataset_id: String)
+
+#GET        /:user_id/datasets/:dataset_id/pre-process               controllers.SummaryController.preProcessSecured(user_id: String, dataset_id: String)
+
+POST       /:user_id/dataset-status                                 controllers.FileHandlerController.getDatasetStatusSecured(user_id: String)
+
+#Job
+GET        /:user_id/jobs                                       controllers.SummaryController.getJob(user_id: String, page: Int ?= 1, limit: Int ?= 15)
+
+#Summary
+GET     /:user_id/datasets/:dataset_id/univariate                   controllers.SummaryController.getUnivariateSecured(user_id: String, dataset_id: String, page: Int ?= 1, limit: Int ?= 5)
+
+GET     /:user_id/datasets/:dataset_id/univariate/:column_id        controllers.SummaryController.getUnivariateSummarySecured(user_id: String, dataset_id: String, column_id: String)
+
+POST     /:user_id/datasets/:dataset_id/get-maxbin-univariate       controllers.SummaryController.getUnivariateSummaryMaxBinSecured(user_id: String, dataset_id: String)
+
+POST    /:user_id/datasets/:dataset_id/univariate                   controllers.SummaryController.computeUnivariateSecured(user_id: String, dataset_id: String)
+GET     /:user_id/datasets/:dataset_id/bivariate                    controllers.SummaryController.computeBivariateSecured(user_id: String, dataset_id: String)
+POST    /:user_id/datasets/:dataset_id/bivariate-summary            controllers.SummaryController.getBivariateSummarySecured(user_id: String, dataset_id: String)
+GET     /:user_id/datasets/:dataset_id/correlation-summary          controllers.SummaryController.getCorrelationSummarySecured(user_id: String, dataset_id: String)
+
+#Decision Tree
+
+POST    /:user_id/datasets/:dataset_id/decision-tree                controllers.SummaryController.buildDecisiontreeSecured(user_id: String, dataset_id: String)
+
+GET     /:user_id/datasets/:dataset_id/decision-tree                controllers.SummaryController.getDecisiontreeSecured(user_id: String, dataset_id: String, page: Int ?= 1, limit: Int ?= 5, q: Option[String] ?=None)
+
+GET     /:user_id/datasets/:dataset_id/decision-tree/:id            controllers.SummaryController.getOneDecisiontreeSecured(user_id: String, dataset_id: String, id: String)
+PUT     /:user_id/datasets/:dataset_id/decision-tree/:id            controllers.SummaryController.updateDecisiontreeSecured(user_id: String, dataset_id: String, id: String)
+DELETE  /:user_id/datasets/:dataset_id/decision-tree/:id            controllers.SummaryController.deleteDecisiontreeSecured(user_id: String, dataset_id: String, id: String)
+
+#Gradient-Boosted Trees
+POST    /:user_id/datasets/:dataset_id/gradient-boosted-tree                controllers.EnsembleModelsController.buildGBTSecured(user_id: String, dataset_id: String)
+GET     /:user_id/datasets/:dataset_id/gradient-boosted-tree                controllers.EnsembleModelsController.getGBTSecured(user_id: String, dataset_id: String,page: Int ?= 1, limit: Int ?= 5, q: Option[String])
+GET     /:user_id/datasets/:dataset_id/gradient-boosted-tree/:id            controllers.EnsembleModelsController.getOneGBTSecured(user_id: String, dataset_id: String, id: String)
+PUT     /:user_id/datasets/:dataset_id/gradient-boosted-tree/:id            controllers.EnsembleModelsController.updateGBTSecured(user_id: String, dataset_id: String, id: String)
+DELETE  /:user_id/datasets/:dataset_id/gradient-boosted-tree/:id            controllers.EnsembleModelsController.deleteGBTSecured(user_id: String, dataset_id: String, id: String)
+
+
+#Random Forests
+POST    /:user_id/datasets/:dataset_id/random-forest                controllers.EnsembleModelsController.buildRandomForestSecured(user_id: String, dataset_id: String)
+GET     /:user_id/datasets/:dataset_id/random-forest                controllers.EnsembleModelsController.getRandomForestSecured(user_id: String, dataset_id: String, page: Int ?= 1, limit: Int ?= 5, q:Option[String])
+GET     /:user_id/datasets/:dataset_id/random-forest/:id            controllers.EnsembleModelsController.getOneRandomForestSecured(user_id: String, dataset_id: String, id: String)
+PUT     /:user_id/datasets/:dataset_id/random-forest/:id            controllers.EnsembleModelsController.updateRandomForestSecured(user_id: String, dataset_id: String, id: String)
+DELETE  /:user_id/datasets/:dataset_id/random-forest/:id            controllers.EnsembleModelsController.deleteRandomForestSecured(user_id: String, dataset_id: String, id: String)
+
+#Anomaly
+POST    /:user_id/datasets/:dataset_id/anomaly                      controllers.SummaryController.buildAnomalySecured(user_id: String, dataset_id: String)
+GET     /:user_id/datasets/:dataset_id/anomaly                      controllers.SummaryController.getAnomaliesSecured(user_id: String, dataset_id: String, page: Int ?= 1, limit: Int ?= 5, q: Option[String])
+GET     /:user_id/datasets/:dataset_id/anomaly/:id                  controllers.SummaryController.getAnomalyByIdSecured(user_id: String, dataset_id: String, id:String, page: Int ?= 1, limit: Int ?= 100)
+DELETE  /:user_id/datasets/:dataset_id/anomaly/:id                  controllers.SummaryController.deleteAnomalyByIdSecured(user_id: String, dataset_id: String, id:String)
+
+#Model scoring
+
+POST    /:user_id/models/:dataset_id/validate                                  controllers.SummaryController.validateModelName(user_id, dataset_id)
+
+GET     /:user_id/models                                           controllers.SummaryController.getModel(user_id: String, page: Option[Int] ?= None, limit: Option[Int] ?= None)
+
+POST   /:user_id/datasets/:dataset_id/models                        controllers.SummaryController.scoreModel(user_id: String, dataset_id: String)
+
+DELETE  /:user_id/models/:id                                        controllers.SummaryController.deleteModel(user_id: String, id: String)
+
+GET     /:user_id/datasets/:dataset_id/score                        controllers.SummaryController.getModelScore(user_id: String, dataset_id:String, page: Option[Int] ?= None, limit: Option[Int] ?= None, q: Option[String])
+
+GET     /:user_id/datasets/:dataset_id/score/:id                    controllers.SummaryController.getScore(user_id: String, dataset_id:String,id:Long, page: Int ?= 1, limit: Int ?= 100)
+
+
+DELETE     /:user_id/datasets/:dataset_id/score/:id                 controllers.SummaryController.deleteScoreById(user_id: String, dataset_id:String,id:Long)
+
+#Data Presentation Model
+POST     /:user_id/datasets/prepare-dataset                         controllers.DataPreparationController.prepareDatasetSecured(user_id: String)
+
+
+
+#Ingest from SQL Datasource
+
+POST    /:user_id/db-connection            controllers.DBConnectionController.createConnection(user_id: String)
+
+GET     /:user_id/db-connection            controllers.DBConnectionController.getConnection(user_id: String, page: Int ?= 1, limit: Int ?= 5)
+
+GET     /:user_id/db-connection/:id        controllers.DBConnectionController.getConnectionById(user_id: String, id:String)
+
+PUT   /:user_id/db-connection/:id          controllers.DBConnectionController.updateConnection(user_id: String, id: String)
+
+DELETE /:user_id/db-connection/:id         controllers.DBConnectionController.deleteConnection(user_id: String, id: String)
+
+POST   /:user_id/test-db-connection        controllers.DBConnectionController.checkConnection(user_id: String)
+
+GET    /:user_id/db-connection/:id/db-list controllers.DBConnectionController.getDBList(user_id: String, id: String)
+
+POST    /:user_id/db-connection/:id/db-details controllers.DBConnectionController.getDBDetails(user_id: String, id: String)
+
+POST    /:user_id/db-connection/:id/run-query  controllers.DBConnectionController.runSqlQuery(user_id: String, id: String)
+
+POST    /:user_id/db-connection/:id/create-dataset  controllers.DBConnectionController.createFromQuery(user_id: String, id: String)
+
+POST   /:user_id/datasets/:dataset_id/numeric-binning  controllers.FileHandlerController.numericBinning(user_id: String, dataset_id: String)
+
+
+#For testing ACL permissions
+GET        /datasets/:user_id/resource/:resource_id                 controllers.UserController.sampleRead(user_id:String, resource_id:String)
+PUT        /datasets/:user_id/resource/:resource_id                 controllers.UserController.sampleUpdate(user_id:String, resource_id:String)
+DELETE     /datasets/:user_id/resource/:resource_id                 controllers.UserController.sampleDelete(user_id:String, resource_id:String)
+
+#Ad-hoc Querying
+GET        /:user_id/adhoc/init/:dataset_id                         controllers.AdhocQueryController.initCtx(user_id:String, dataset_id:String)
+POST       /:user_id/adhoc/exec/:dataset_id                         controllers.AdhocQueryController.executeQuery(user_id:String, dataset_id:String)

@@ -1,0 +1,365 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "version": "v2",
+    "title": "Job server API",
+    "description": "This is  APIs for Job server"
+  },
+  "tags": [
+    {
+      "name": "job",
+      "description": "Job API"
+    }
+  ],
+  "paths": {
+    "/job": {
+      "post": {
+        "tags": [
+          "job"
+        ],
+        "summary": "Creates a job",
+        "description": "Creates and runs a job",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "data",
+            "in": "body",
+            "description": "Add new job",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/UnivariateJob"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "ok",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "string",
+                  "example": "job created successfully"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "internal server error"
+          }
+        }
+      }
+    },
+    "/job/{job_id}/status": {
+      "get": {
+        "tags": [
+          "job"
+        ],
+        "summary": "Returns status of a job",
+        "description": "Returns the status of a job",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "job_id",
+            "in": "path",
+            "description": "Id of the job",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "ok",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "string",
+                  "example": "completed"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "internal server error"
+          }
+        }
+      }
+    },
+    "/job/{job_id}/result": {
+      "get": {
+        "tags": [
+          "job"
+        ],
+        "summary": "Returns result of a job",
+        "description": "Returns the result of a job",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "job_id",
+            "in": "path",
+            "description": "Id of the job",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "ok",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "result": {
+                  "type": "string",
+                  "example": "{'mean':'2.0149','median':'3.1021'}"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "internal server error"
+          }
+        }
+      }
+    },
+    "/job/{job_id}/restart": {
+      "get": {
+        "tags": [
+          "job"
+        ],
+        "summary": "Restarts a job",
+        "description": "Restarts a job if it is not running",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "job_id",
+            "in": "path",
+            "description": "Id of the job to restart",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "ok",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "string",
+                  "example": "job restarted successfully"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "internal server error"
+          }
+        }
+      }
+    },
+    "/job/{job_id}": {
+      "delete": {
+        "tags": [
+          "job"
+        ],
+        "summary": "Deletes a job",
+        "description": "Deletes a job if it is not running",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "job_id",
+            "in": "path",
+            "description": "Id of the job to delete",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "ok",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "string",
+                  "example": "job deleted successfully"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "internal server error"
+          }
+        }
+      }
+    }
+  },
+  "definitions": {
+    "UnivariateJob": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "type": "string",
+          "example": "univariate"
+        },
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "dataset_path": {
+              "type": "string",
+              "example": "s3://amplifyr-users/user1"
+            },
+            "column_name": {
+              "type": "string",
+              "example": "profit"
+            }
+          }
+        }
+      }
+    },
+    "BivariateJob": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "type": "string",
+          "example": "bivariate"
+        },
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "dataset_path": {
+              "type": "string",
+              "example": "s3://amplifyr-users/user1"
+            },
+            "column_1_name": {
+              "type": "string",
+              "example": "profit"
+            },
+            "column_2_name": {
+              "type": "string",
+              "example": "loss"
+            }
+          }
+        }
+      }
+    },
+    "DecisionTreeJob": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string",
+          "example": "Tree_name"
+        },
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "dataset_path": {
+              "type": "string",
+              "example": "s3://amplifyr-users/user1"
+            },
+            "impurity": {
+              "type": "string",
+              "example": "gini"
+            },
+            "max_bins": {
+              "type": "number",
+              "example": 32
+            },
+            "max_depth": {
+              "type": "number",
+              "example": 5
+            },
+            "min_instances_per_node": {
+              "type": "number",
+              "example": 1
+            },
+            "training_samples": {
+              "type": "number",
+              "example": 80
+            },
+            "test_samples": {
+              "type": "number",
+              "example": 20
+            },
+            "dependent_variable": {
+              "type": "string",
+              "example": "profit"
+            },
+            "independent_variable": {
+              "type": "array",
+              "example": [
+                "col1",
+                "col2"
+              ]
+            }
+          }
+        }
+      }
+    },
+    "AnomalyJob": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string",
+          "example": "anomaly_name"
+        },
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "dataset_path": {
+              "type": "string",
+              "example": "s3://amplifyr-users/user1"
+            },
+            "number_of_trees": {
+              "type": "number",
+              "example": 100
+            },
+            "proportion_of_samples": {
+              "type": "number",
+              "example": 50
+            },
+            "anomalies_to_detect": {
+              "type": "number",
+              "example": 50
+            },
+            "bootstrap": {
+              "type": "boolean",
+              "example": true
+            },
+            "random_split": {
+              "type": "number",
+              "example": 80
+            },
+            "with_replacement": {
+              "type": "boolean",
+              "example": true
+            },
+            "feature_columns": {
+              "type": "array",
+              "example": [
+                "col1",
+                "col2"
+              ]
+            }
+          }
+        }
+      }
+    }
+  },
+  "schemes": [
+    "https"
+  ],
+  "host": "virtserver.swaggerhub.com",
+  "basePath": "/IdeaLabsLatentView/AmplifyrV2/v2"
+}
