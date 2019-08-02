@@ -35,7 +35,7 @@ class FileHandlerSecuredSpec extends Specification with Inject {
       }
 
       select_statement.executeUpdate("INSERT INTO  user (id, username, first_name, last_name, email, created_date, modified_date, profile_image)" +
-        " VALUES('1','idealabs','idealabs','latentview','"+configuration.underlying.getString("authconfig.email")+"',23452345, 21341234,'');")
+        " VALUES('1','name','name','name','"+configuration.underlying.getString("authconfig.email")+"',23452345, 21341234,'');")
 
     } catch {
       case e: Exception => None
